@@ -1,0 +1,4 @@
+# Intermediate Build files
+/temp
+/**/*.ncb
+/**/*.suo
