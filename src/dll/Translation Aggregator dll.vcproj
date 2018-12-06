@@ -376,6 +376,14 @@
 				>
 			</File>
 		</Filter>
+		<File
+			RelativePath=".\resource.h"
+			>
+		</File>
+		<File
+			RelativePath=".\Translation Aggregator dll.rc"
+			>
+		</File>
 	</Files>
 	<Globals>
 	</Globals>

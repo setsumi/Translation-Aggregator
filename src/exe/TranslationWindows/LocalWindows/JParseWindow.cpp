@@ -213,6 +213,13 @@ INT_PTR CALLBACK JParseDialogProc(HWND hWndDlg, UINT uMsg, WPARAM wParam, LPARAM
 	int i;
 	wchar_t str[30];
 	switch (uMsg) {
+		case WM_SHOWWINDOW: //hack - fix keyboard input on freshly shown dialogs
+			if (wParam) {
+				HWND hwndOk = GetDlgItem(hWndDlg, IDOK);
+				SetActiveWindow(hWndDlg);
+				SetFocus(hwndOk);
+			}
+			break;
 		case WM_INITDIALOG:
 			{
 				if (config.jParserDefinitionLines) config.jParserFlags |= JPARSER_JAPANESE_OWN_LINE;

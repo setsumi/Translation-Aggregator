@@ -72,14 +72,17 @@ BEGIN
     POPUP "&View"
     BEGIN
         MENUITEM "&Font\tAlt-F",                ID_VIEW_FONT
-        MENUITEM "&Tooltip Font\tAlt-T",        ID_VIEW_TOOLTIP_FONT
+        MENUITEM "Tooltip Font\tAlt-T",         ID_VIEW_TOOLTIP_FONT
         MENUITEM SEPARATOR
         MENUITEM "Hide &Toolbar\tCtrl-T",       ID_VIEW_HIDETOOLBAR
         MENUITEM "&Hide  Frame\tCtrl-F",        ID_VIEW_HIDEWINDOWFRAME
+        MENUITEM "&Borderless\tCtrl-B",         ID_BORDERLESS_WINDOW
         MENUITEM "&Always on Top\tAlt-A",       ID_TOPMOST
         MENUITEM SEPARATOR
         MENUITEM "&More Transparent\tCtrl-Num-", ID_VIEW_LESSSOLID
         MENUITEM "&Less Transparent\tCtrl-Num+", ID_VIEW_MORESOLID
+        MENUITEM SEPARATOR
+        MENUITEM "&Reset Placement\tCtrl-P",    ID_VIEW_RESETPLACEMENT
     END
     POPUP "&Window"
     BEGIN
@@ -109,6 +112,7 @@ BEGIN
     "7",            ID_BIND_LAYOUT_7,       VIRTKEY, SHIFT, ALT, NOINVERT
     "8",            ID_BIND_LAYOUT_8,       VIRTKEY, SHIFT, ALT, NOINVERT
     "9",            ID_BIND_LAYOUT_9,       VIRTKEY, SHIFT, ALT, NOINVERT
+    "B",            ID_BORDERLESS_WINDOW,   VIRTKEY, CONTROL, NOINVERT
     "L",            ID_FILE_INJECTINTOPROCESS, VIRTKEY, CONTROL, NOINVERT
     "X",            ID_FILE_QUIT,           VIRTKEY, ALT, NOINVERT
     "0",            ID_LAYOUT_0,            VIRTKEY, ALT, NOINVERT
@@ -133,8 +137,9 @@ BEGIN
     VK_SUBTRACT,    ID_VIEW_LESSSOLID,      VIRTKEY, CONTROL, NOINVERT
     VK_ADD,         ID_VIEW_MORESOLID,      VIRTKEY, CONTROL, NOINVERT
     "0",            ID_VIEW_SHOWALL,        VIRTKEY, CONTROL, NOINVERT
-    "2",            ID_VIEW_TWOCOLUMN,      VIRTKEY, CONTROL, NOINVERT
     "T",            ID_VIEW_TOOLTIP_FONT,   VIRTKEY, ALT, NOINVERT
+    "2",            ID_VIEW_TWOCOLUMN,      VIRTKEY, CONTROL, NOINVERT
+    "P",            ID_VIEW_RESETPLACEMENT, VIRTKEY, CONTROL, NOINVERT
 END
 
 
@@ -224,6 +229,42 @@ BEGIN
     END
 END
 #endif    // APSTUDIO_INVOKED
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Version
+//
+
+VS_VERSION_INFO VERSIONINFO
+ FILEVERSION 0,4,3,1
+ PRODUCTVERSION 0,4,3,1
+ FILEFLAGSMASK 0x17L
+#ifdef _DEBUG
+ FILEFLAGS 0x1L
+#else
+ FILEFLAGS 0x0L
+#endif
+ FILEOS 0x4L
+ FILETYPE 0x1L
+ FILESUBTYPE 0x0L
+BEGIN
+    BLOCK "StringFileInfo"
+    BEGIN
+        BLOCK "041104b0"
+        BEGIN
+            VALUE "FileDescription", "Translation Aggregator by ScumSuckingPig, mod by furniture"
+            VALUE "FileVersion", "0, 4, 3, 1"
+            VALUE "OriginalFilename", "Translation Aggregator.exe"
+            VALUE "ProductName", "Translation Aggregator"
+            VALUE "ProductVersion", "0, 4, 3, 1"
+        END
+    END
+    BLOCK "VarFileInfo"
+    BEGIN
+        VALUE "Translation", 0x411, 1200
+    END
+END
 
 #endif    // Japanese resources
 /////////////////////////////////////////////////////////////////////////////
@@ -584,6 +625,13 @@ BEGIN
 END
 #endif    // APSTUDIO_INVOKED
 
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Cursor
+//
+
+IDC_POINTER             CURSOR                  "arrow.cur"
 #endif    // English (U.S.) resources
 /////////////////////////////////////////////////////////////////////////////
 

@@ -120,7 +120,7 @@ void SetInternalHooks(HWND hWnd, wchar_t *injectionHooks) {
 
 int GetLocaleName(const LCID& lcid, wchar_t *name, int maxNameLen) {
 	if (lcid) {
-		int len = GetLocaleInfoW(lcid, LOCALE_SENGLISHLANGUAGENAME, name, maxNameLen);
+		int len = GetLocaleInfoW(lcid, 0x00001001/*LOCALE_SENGLISHLANGUAGENAME*/, name, maxNameLen); //hack - replace LOCALE_SENGLISHLANGUAGENAME with value 
 		if (len > 0) return len;
 		len = GetLocaleInfoW(lcid, LOCALE_SENGLANGUAGE, name, maxNameLen);
 		if (len > 0) return len;
@@ -989,6 +989,13 @@ INT_PTR CALLBACK InjectDialog(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 		break;
 	case WM_CLOSE:
 		EndDialog(hWnd, 1);
+		break;
+	case WM_SHOWWINDOW: //hack - fix keyboard input on freshly shown dialogs
+		if (wParam) {
+			HWND hwndOk = GetDlgItem(hWnd, IDOK);
+			SetActiveWindow(hWnd);
+			SetFocus(hwndOk);
+		}
 		break;
 	default:
 		break;

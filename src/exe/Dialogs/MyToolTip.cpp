@@ -1,4 +1,4 @@
-#include <Shared/Shrink.h>
+Ôªø#include <Shared/Shrink.h>
 #include "MyToolTip.h"
 #include <Shared/StringUtil.h>
 #include "../Config.h"
@@ -716,7 +716,7 @@ void ShowToolTip(wchar_t *text, HWND hWnd, RECT *r) {
 								hDeleteLine(j, lines, linesCnt);
 							}
 						}
-						wcscpy(d, L"Å™");
+						wcscpy(d, L"‚Üë");
 						hMoveLine(lines, linesCnt, j, to);
 						i = to;
 						to++;

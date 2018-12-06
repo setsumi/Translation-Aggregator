@@ -7,6 +7,7 @@
 #define ID_DELETE                       5
 #define ID_CLEAR                        6
 #define IDR_MAIN_MENU                   102
+#define IDC_POINTER                     104
 #define IDR_ACCELERATORS                105
 #define IDI_ICON1                       106
 #define IDR_TOOLBAR_TRANSLATION         107
@@ -214,13 +215,15 @@
 #define ID_CONTEXT_CLEAR                40085
 #define ID_PROCESS_CLEAR                40086
 #define ID_VIEW_TOOLTIP_FONT            40087
+#define ID_BORDERLESS_WINDOW            40088
+#define ID_VIEW_RESETPLACEMENT          40091
 
 // Next default values for new objects
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        119
-#define _APS_NEXT_COMMAND_VALUE         40087
+#define _APS_NEXT_COMMAND_VALUE         40094
 #define _APS_NEXT_CONTROL_VALUE         1061
 #define _APS_NEXT_SYMED_VALUE           101
 #endif

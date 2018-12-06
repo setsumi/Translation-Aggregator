@@ -1,4 +1,4 @@
-﻿// Handles main windows and basically everything that involves
+﻿ // Handles main windows and basically everything that involves
 // communication between multipl subwindows.
 // #include <vld.h>
 /*
@@ -342,6 +342,7 @@ struct MasterWindow {
 	unsigned char numCols;
 	unsigned char topmost;
 	unsigned char showWindowFrame;
+	unsigned char borderlessWindow;
 	unsigned char showToolbars;
 	unsigned char alpha;
 	TranslationWindow *children[20];
@@ -402,10 +403,16 @@ struct MasterWindow {
 	void MakeWindow() {
 		DWORD styleEx = WS_EX_COMPOSITED;
 		DWORD style = WS_CLIPSIBLINGS;
-		if (showWindowFrame)
-			style |= WS_OVERLAPPEDWINDOW;
-		else
-			style |= WS_POPUP | WS_THICKFRAME;
+		//hack - borderless window
+		if (borderlessWindow) {
+			showWindowFrame = 0;
+			style |= WS_POPUP;
+		} else {
+			if (showWindowFrame)
+				style |= WS_OVERLAPPEDWINDOW;
+			else
+				style |= WS_POPUP | WS_THICKFRAME;
+		}
 		HWND hWndOld = hWnd;
 		RECT r;
 		if (hWnd) {
@@ -476,8 +483,9 @@ struct MasterWindow {
 		}
 	}
 
-	void SetWindowFrame(int val) {
+	void SetWindowFrame(int val, int bord = 0) {
 		showWindowFrame = val;
+		borderlessWindow = bord;
 		MakeWindow();
 		SetChecks();
 	}
@@ -628,7 +636,7 @@ struct MasterWindow {
 	}
 
 
-	static MasterWindow *CreateMasterWindow(TranslationWindow *w, int numCols=2, int colPlacement=RANGE_MAX/2, int topmost = 0, int frame = 1, int toolbars = 1, int alpha = 255, int lockWindows = 0) {
+	static MasterWindow *CreateMasterWindow(TranslationWindow *w, int numCols=2, int colPlacement=RANGE_MAX/2, int topmost = 0, int frame = 1, int toolbars = 1, int alpha = 255, int lockWindows = 0, int borderless = 0) {
 		if (colPlacement < 0 || colPlacement > RANGE_MAX) colPlacement = RANGE_MAX/2;
 		MasterWindow *master = (MasterWindow*) calloc(1, sizeof(MasterWindow));
 
@@ -638,6 +646,7 @@ struct MasterWindow {
 		master->colPlacement = colPlacement;
 		master->topmost = topmost;
 		master->showWindowFrame = frame;
+		master->borderlessWindow = borderless;
 		master->showToolbars = toolbars;
 
 		master->MakeWindow();
@@ -824,7 +833,7 @@ struct MasterWindow {
 				}
 				RECT r;
 				GetWindowRect(win->hWnd, &r);
-				wsprintf(end, L"; %i, %i, %i, %i, %i, %i, %i, %i, %i, %i, %i; ", win->numCols, win->topmost, win->showWindowFrame, win->showToolbars, win->alpha, win->colPlacement, r.left, r.top, r.right-r.left, r.bottom-r.top, win->lockWindows);
+				wsprintf(end, L"; %i, %i, %i, %i, %i, %i, %i, %i, %i, %i, %i, %i; ", win->numCols, win->topmost, win->showWindowFrame, win->showToolbars, win->alpha, win->colPlacement, r.left, r.top, r.right-r.left, r.bottom-r.top, win->lockWindows, win->borderlessWindow);
 				for (int j=0; j<win->numRows; j++) {
 					if (j)
 						wcscat(end, L", ");
@@ -883,7 +892,7 @@ struct MasterWindow {
 				}
 				if (win) {
 					if (!master)
-						master = MasterWindow::CreateMasterWindow(win, vals[0], vals[5], vals[1], vals[2], vals[3], vals[4], vals[10]);
+						master = MasterWindow::CreateMasterWindow(win, vals[0], vals[5], vals[1], vals[2], vals[3], vals[4], vals[10], vals[11]);
 					else
 						master->AddChild(win);
 				}
@@ -894,17 +903,20 @@ struct MasterWindow {
 
 			// Not real rects - use height and width instead of bottom/right.
 			RECT rects[2] = {{vals[6], vals[7], vals[8], vals[9]}, {0,0,0,0}};
-			if (rects[0].right < 50) rects[0].right = 50;
-			if (rects[0].bottom < 50) rects[0].bottom = 50;
-			EnumDisplayMonitors(0, 0, PlaceWindowFromMonitorEnum, (LPARAM) &rects);
-			if (rects[1].left == rects[1].right) {
-				rects[0].left = rects[0].top = 0;
-				EnumDisplayMonitors(0, 0, PlaceWindowFromMonitorEnum, (LPARAM) &rects);
-				if (rects[1].left == rects[1].right) {
-					rects[1].top = rects[1].left = 0;
-					rects[1].bottom = rects[1].right = 400;
-				}
-			}
+			//hack - no reposition if beyond screen
+			rects[1] = rects[0];
+			//if (rects[0].right < 50) rects[0].right = 50;
+			//if (rects[0].bottom < 50) rects[0].bottom = 50;
+			//EnumDisplayMonitors(0, 0, PlaceWindowFromMonitorEnum, (LPARAM) &rects);
+			//if (rects[1].left == rects[1].right) {
+			//	rects[0].left = rects[0].top = 0;
+			//	EnumDisplayMonitors(0, 0, PlaceWindowFromMonitorEnum, (LPARAM) &rects);
+			//	if (rects[1].left == rects[1].right) {
+			//		rects[1].top = rects[1].left = 0;
+			//		rects[1].bottom = rects[1].right = 400;
+			//	}
+			//}
+			//hackend
 			MoveWindow(master->hWnd, rects[1].left, rects[1].top, rects[1].right, rects[1].bottom, 0);
 
 			int index = 0;
@@ -1117,6 +1129,21 @@ LRESULT CALLBACK TwigMainWindowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM 
 	MasterWindow *win = (MasterWindow*) GetWindowLongPtr(hWnd, GWLP_USERDATA);
 	if (win) {
 		switch(uMsg) {
+			//hack - splitter color (main window background)
+			case WM_PAINT:
+				{
+					PAINTSTRUCT ps;
+					HDC hdc = BeginPaint(hWnd, &ps);
+
+					HBRUSH brush = CreateSolidBrush(RGB(150,150,150));
+					HBRUSH oldbrush = (HBRUSH)SelectObject(hdc, brush);
+					FillRect(hdc, &ps.rcPaint, brush);
+					SelectObject(hdc, oldbrush);
+					DeleteObject(brush);
+
+					EndPaint(hWnd, &ps);
+				}
+				break;
 			case WM_CLOSE:
 				MasterWindow::SaveLayout(0);
 				while (win->RemoveChild(win->children[0]));
@@ -1250,6 +1277,14 @@ LRESULT CALLBACK TwigMainWindowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM 
 						// Need to set config.windowOrder to match.  If do it in ShowWindowFrame(),
 						// bad things may happen on init.  Really, really nasty to do it like this,
 						// but it works.
+						return 0;
+					}
+					else if (cmd == ID_BORDERLESS_WINDOW) { //hack - borderless window menu click
+						win->SetWindowFrame(win->showWindowFrame, !win->borderlessWindow);
+						return 0;
+					}
+					else if (cmd == ID_VIEW_RESETPLACEMENT) { //hack - reset TA window position
+						SetWindowPos(hWnd, HWND_TOPMOST, 100, 100, 0, 0, SWP_NOSIZE);
 						return 0;
 					}
 					else if (cmd == ID_VIEW_TWOCOLUMN) {
