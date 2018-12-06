@@ -1,5 +1,6 @@
 # Intermediate Build files
 /temp
+/bin/Translation Aggregator.ini
 /**/*.ncb
 /**/*.suo
 /**/*.aps

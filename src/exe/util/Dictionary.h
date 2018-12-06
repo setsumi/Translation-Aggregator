@@ -29,6 +29,9 @@
 #define JAP_WORD_COMMON			0x0004
 // Given a slight bonus over other words.
 #define JAP_WORD_PART			0x0008
+//hack - custom word top priority flag
+#define JAP_WORD_TOP			0x0010 // (T) custom tag
+//hackend
 
 // Set for final Japanese string, just before english.
 #define JAP_WORD_FINAL			0x8000

@@ -9,7 +9,7 @@ HonyakuWindow::HonyakuWindow() : HttpWindow(L"Honyaku", L"http://honyaku.yahoo.c
 
 wchar_t *HonyakuWindow::FindTranslatedText(wchar_t* html) {
 	int slen;
-	wchar_t *start = GetSubstring(html, L"id=\"trn_textText\" class=\"\">", L"</textarea>", &slen);
+	wchar_t *start = GetSubstring(html, L"id=\"trn_textText\" class=\"percent\">", L"</textarea>", &slen);
 	if (!slen) return 0;
 	start[slen] = 0;
 	return start;

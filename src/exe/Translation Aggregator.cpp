@@ -1331,7 +1331,7 @@ LRESULT CALLBACK TwigMainWindowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM 
 						}
 						return 0;
 					}
-					else if (cmd = ID_VIEW_TOOLTIP_FONT) {
+					else if (cmd == ID_VIEW_TOOLTIP_FONT) {
 						if (MyChooseFont(hWnd, &config.toolTipFont)) {
 							SaveConfig();
 						}

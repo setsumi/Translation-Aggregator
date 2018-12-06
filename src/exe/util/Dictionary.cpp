@@ -270,6 +270,12 @@ int CreateDict(wchar_t *inPath, FileSig &srcSig, wchar_t *path) {
 						primaryFlags |= JAP_WORD_COMMON;
 					}
 				}
+				//hack - set custom word top priority flag (1)
+				if (wcsstr(line, L"(T)")) {
+					flags |= JAP_WORD_TOP;
+					primaryFlags |= JAP_WORD_TOP;
+				}
+				//hackend
 
 				/*
 				if (numEntries == maxEntries) {
@@ -336,6 +342,10 @@ int CreateDict(wchar_t *inPath, FileSig &srcSig, wchar_t *path) {
 							if (japString[w]) {
 								if (wcsstr(japString+w, L"(P)"))
 									jStringData->flags |= JAP_WORD_COMMON;
+								//hack - set custom word top priority flag (2)
+								if (wcsstr(japString+w, L"(T)"))
+									jStringData->flags |= JAP_WORD_TOP;
+								//hackend
 								japString[w] = 0;
 							}
 
@@ -1012,7 +1022,10 @@ int __cdecl CompareMatches(const void *v1, const void *v2) {
 	int name = (m1->matchFlags & MATCH_IS_NAME) - (m2->matchFlags & MATCH_IS_NAME);
 	if (name) return name;
 
-	int mask = JAP_WORD_COMMON | JAP_WORD_PART | JAP_WORD_PRIMARY;
+	//hack - ???
+	int mask = JAP_WORD_TOP | JAP_WORD_COMMON | JAP_WORD_PART | JAP_WORD_PRIMARY;
+	//int mask = JAP_WORD_COMMON | JAP_WORD_PART | JAP_WORD_PRIMARY;
+	//hackend
 	int flagDiff = (m2->japFlags & mask) - (m1->japFlags & mask);
 	if (flagDiff) return flagDiff;
 	// May do something better later.
@@ -1200,6 +1213,12 @@ void FindBestMatches(wchar_t *string, int len, Match *&matches, int &numMatches,
 				}
 			}
 
+			//hack - set custom word top priority score
+			if (match->japFlags & JAP_WORD_TOP) {
+				//Beep(500,50);
+				score = -999999;
+			}
+			//hackend
 			/*
 			// Bonus for exactly matching a primary entry - basically discourage
 			// Hiragana entries for entries with kanji, in favor of words with
