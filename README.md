@@ -1,9 +1,10 @@
-# Translation-Aggregator 0.4.3 mod focused on improving JParser and Mecab experience
+# Translation Aggregator 0.4.3 mod focused on improving JParser and Mecab experience
 
 0.4.3.1
 - made UI flat style
 - added borderless mode
-- word highlight color is now overall background color in JParser and Mecab
+- default word highlight color is now overall background color in JParser and Mecab
+	to match other colors set them to zero
 - made custom cursor for JParser and Mecab
 - no more automatic reposition/resize on launch if some parts of TA window where off screen last time
 - added menu option to reset TA window position

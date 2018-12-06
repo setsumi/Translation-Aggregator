@@ -1,8 +1,4 @@
-﻿// "Test" in Shift-JIS
-// "ƒeƒXƒg"
-
-
-// Contains code used to figure out how to get ATLAS dll working.
+﻿// Contains code used to figure out how to get ATLAS dll working.
 // Also contains an early version of AGTH-ish code.  Need a communication
 // mechanism, and to add more functions, and some sort of duplicate character/string
 // filter, and then it's basically done, with a lot of caveats (No special code
