@@ -2,3 +2,6 @@
 /temp
 /**/*.ncb
 /**/*.suo
+/**/*.aps
+/**/*.sdf
+/**/*.Setsumi.user
