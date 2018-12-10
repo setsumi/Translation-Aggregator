@@ -840,7 +840,11 @@ struct MasterWindow {
 				}
 				RECT r;
 				GetWindowRect(win->hWnd, &r);
-				wsprintf(end, L"; %i, %i, %i, %i, %i, %i, %i, %i, %i, %i, %i, %i, %i, %i; ", win->numCols, win->topmost, win->showWindowFrame, win->showToolbars, win->alpha, win->colPlacement, r.left, r.top, r.right-r.left, r.bottom-r.top, win->lockWindows, win->borderlessWindow, pjparser?pjparser->defaultBKColor:0, pmecab?pmecab->defaultBKColor:0);
+				wsprintf(end, L"; %i, %i, %i, %i, %i, %i, %i, %i, %i, %i, %i, %i, %i, %i, %i, %i, %i, %i, %i, %i; ", win->numCols, win->topmost, win->showWindowFrame, win->showToolbars, win->alpha, win->colPlacement, r.left, r.top, r.right-r.left, r.bottom-r.top, win->lockWindows, win->borderlessWindow,
+					pjparser?pjparser->colors[0]:0, pjparser?pjparser->colors[1]:0,
+					pjparser?pjparser->colors[2]:0, pjparser?pjparser->colors[3]:0,
+					pmecab?pmecab->colors[0]:0, pmecab?pmecab->colors[1]:0,
+					pmecab?pmecab->colors[2]:0, pmecab?pmecab->colors[3]:0);
 				for (int j=0; j<win->numRows; j++) {
 					if (j)
 						wcscat(end, L", ");
@@ -895,10 +899,17 @@ struct MasterWindow {
 					if (!wcsnicmp(windows[j]->windowType, name, wcslen(windows[j]->windowType))) {
 						win = windows[j];
 						//hack - load JParser and Mecab background color from layout
-						if (!wcsnicmp(L"JParser", name, wcslen(name)))
-							((FuriganaWindow*)win)->defaultBKColor = vals[12];
-						else if (!wcsnicmp(L"Mecab", name, wcslen(name)))
-							((FuriganaWindow*)win)->defaultBKColor = vals[13];
+						if (!wcsnicmp(L"JParser", name, wcslen(name))) {
+							((FuriganaWindow*)win)->colors[0] = vals[12];
+							((FuriganaWindow*)win)->colors[1] = vals[13];
+							((FuriganaWindow*)win)->colors[2] = vals[14];
+							((FuriganaWindow*)win)->colors[3] = vals[15];
+						} else if (!wcsnicmp(L"Mecab", name, wcslen(name))) {
+							((FuriganaWindow*)win)->colors[0] = vals[16];
+							((FuriganaWindow*)win)->colors[1] = vals[17];
+							((FuriganaWindow*)win)->colors[2] = vals[18];
+							((FuriganaWindow*)win)->colors[3] = vals[19];
+						}
 						break;
 					}
 				}
