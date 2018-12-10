@@ -11,6 +11,7 @@
 #include "util/Dictionary.h"
 #include "TranslationWindows/TranslationWindow.h"
 #include "TranslationWindows/TranslationWindowFactory.h"
+#include "TranslationWindows/LocalWindows/FuriganaWindow.h"
 
 #include "config.h"
 
@@ -825,15 +826,21 @@ struct MasterWindow {
 				wchar_t *end = temp;
 				*end = 0;
 				MasterWindow *win = masterWindows[i];
+				FuriganaWindow *pjparser = NULL, *pmecab = NULL; //hack - save JParser and Mecab background color into layout
 				for (int j=0; j<win->numChildren; j++) {
 					if (j)
 						wcscat(end, L",");
 					wcscat(end, win->children[j]->windowType);
 					end = wcschr(end, 0);
+
+					if (!wcsnicmp(L"JParser", win->children[j]->windowType, wcslen(win->children[j]->windowType)))
+						pjparser = (FuriganaWindow*)win->children[j];
+					else if (!wcsnicmp(L"Mecab", win->children[j]->windowType, wcslen(win->children[j]->windowType)))
+						pmecab = (FuriganaWindow*)win->children[j];
 				}
 				RECT r;
 				GetWindowRect(win->hWnd, &r);
-				wsprintf(end, L"; %i, %i, %i, %i, %i, %i, %i, %i, %i, %i, %i, %i; ", win->numCols, win->topmost, win->showWindowFrame, win->showToolbars, win->alpha, win->colPlacement, r.left, r.top, r.right-r.left, r.bottom-r.top, win->lockWindows, win->borderlessWindow);
+				wsprintf(end, L"; %i, %i, %i, %i, %i, %i, %i, %i, %i, %i, %i, %i, %i, %i; ", win->numCols, win->topmost, win->showWindowFrame, win->showToolbars, win->alpha, win->colPlacement, r.left, r.top, r.right-r.left, r.bottom-r.top, win->lockWindows, win->borderlessWindow, pjparser?pjparser->defaultBKColor:0, pmecab?pmecab->defaultBKColor:0);
 				for (int j=0; j<win->numRows; j++) {
 					if (j)
 						wcscat(end, L", ");
@@ -865,7 +872,7 @@ struct MasterWindow {
 			if (!GetPrivateProfileStringW(prefix, temp2, L"", temp, sizeof(temp)/sizeof(temp[0]), config.ini))
 				continue;
 			wchar_t *windowString = mywcstok(temp, L";");
-			if (!windows) continue;
+			if (!windowString) continue;
 			wchar_t *valString = mywcstok(0, L";");
 			if (!valString) continue;
 			wchar_t *placement = mywcstok(0, L";");
@@ -887,6 +894,11 @@ struct MasterWindow {
 				for (int j=0; j<numWindows; j++) {
 					if (!wcsnicmp(windows[j]->windowType, name, wcslen(windows[j]->windowType))) {
 						win = windows[j];
+						//hack - load JParser and Mecab background color from layout
+						if (!wcsnicmp(L"JParser", name, wcslen(name)))
+							((FuriganaWindow*)win)->defaultBKColor = vals[12];
+						else if (!wcsnicmp(L"Mecab", name, wcslen(name)))
+							((FuriganaWindow*)win)->defaultBKColor = vals[13];
 						break;
 					}
 				}

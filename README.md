@@ -1,5 +1,8 @@
 # Translation Aggregator 0.4.3 mod focused on improving JParser and Mecab experience
 
+0.4.3.2
+- JParser and Mecab background colors are now stored with layout profile (each layout have its own colors)
+
 0.4.3.1
 - made UI flat style
 - added borderless mode
