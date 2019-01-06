@@ -1631,6 +1631,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	wchar_t * command = GetCommandLineW();
 	//*/
 
+	SetErrorMode(SetErrorMode(0) | SEM_NOGPFAULTERRORBOX);
+
 	WSADATA wsaData;
 	int winsockHappy = !WSAStartup(0x202, &wsaData);
 	ghInst = hInstance;

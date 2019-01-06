@@ -237,8 +237,8 @@ END
 //
 
 VS_VERSION_INFO VERSIONINFO
- FILEVERSION 0,4,3,2
- PRODUCTVERSION 0,4,3,2
+ FILEVERSION 0,4,3,3
+ PRODUCTVERSION 0,4,3,3
  FILEFLAGSMASK 0x17L
 #ifdef _DEBUG
  FILEFLAGS 0x1L
@@ -254,10 +254,10 @@ BEGIN
         BLOCK "041104b0"
         BEGIN
             VALUE "FileDescription", "Translation Aggregator by ScumSuckingPig, mod by furniture"
-            VALUE "FileVersion", "0, 4, 3, 2"
+            VALUE "FileVersion", "0, 4, 3, 3"
             VALUE "OriginalFilename", "Translation Aggregator.exe"
             VALUE "ProductName", "Translation Aggregator"
-            VALUE "ProductVersion", "0, 4, 3, 2"
+            VALUE "ProductVersion", "0, 4, 3, 3"
         END
     END
     BLOCK "VarFileInfo"
