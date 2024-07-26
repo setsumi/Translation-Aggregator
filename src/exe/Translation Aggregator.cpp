@@ -349,7 +349,8 @@ struct MasterWindow {
 	TranslationWindow *children[20];
 	int rowPlacements[20];
 	RECT windowPlacements[20];
-	unsigned char minimizeonesc;
+	unsigned char minimizeOnEsc;
+	unsigned char wasMinimized;
 
 	void Destroy() {
 		for (int i=0; i<numMasterWindows; i++) {
@@ -381,14 +382,18 @@ struct MasterWindow {
 	}
 
 	void SetMinimizeOnEsc(int val) {
-		minimizeonesc = val;
-		if (minimizeonesc) {
+		minimizeOnEsc = val;
+		SetMinimizeHotkey(val);
+		SetChecks();
+	}
+
+	void SetMinimizeHotkey(int val) {
+		if (val) {
 			RegisterHotKey(hWnd, 1, 0, VK_ESCAPE);
 		}
 		else {
 			UnregisterHotKey(hWnd, 1);
 		}
-		SetChecks();
 	}
 
 	void SetNumCols(int val) {
@@ -444,7 +449,7 @@ struct MasterWindow {
 			}
 			SetWindowLongPtr(hWnd, GWLP_USERDATA, (ULONG_PTR)this);
 			SetTopmost(topmost);
-			SetMinimizeOnEsc(minimizeonesc);
+			SetMinimizeOnEsc(minimizeOnEsc);
 			HMENU hMenu = GetMenu(hWnd);
 			if (hMenu) {
 				if (!showWindowFrame) {
@@ -659,7 +664,8 @@ struct MasterWindow {
 		master->numCols = 1 + (1!=numCols);
 		master->colPlacement = colPlacement;
 		master->topmost = topmost;
-		master->minimizeonesc = minimizeonesc;
+		master->minimizeOnEsc = minimizeonesc;
+		master->wasMinimized = 0;
 		master->showWindowFrame = frame;
 		master->borderlessWindow = borderless;
 		master->showToolbars = toolbars;
@@ -802,7 +808,7 @@ struct MasterWindow {
 				CheckMenuItem(hMenu, ID_TOPMOST, MF_BYCOMMAND | check);
 
 				check = MF_UNCHECKED;
-				if (minimizeonesc) check = MF_CHECKED;
+				if (minimizeOnEsc) check = MF_CHECKED;
 				CheckMenuItem(hMenu, ID_VIEW_MINIMIZEONESC, MF_BYCOMMAND | check);
 			}
 			if (hMenu = GetSubMenu(hMainMenu, 3)) {
@@ -863,7 +869,7 @@ struct MasterWindow {
 					pjparser?pjparser->colors[2]:0, pjparser?pjparser->colors[3]:0,
 					pmecab?pmecab->colors[0]:0, pmecab?pmecab->colors[1]:0,
 					pmecab?pmecab->colors[2]:0, pmecab?pmecab->colors[3]:0,
-					win->minimizeonesc);
+					win->minimizeOnEsc);
 				for (int j=0; j<win->numRows; j++) {
 					if (j)
 						wcscat(end, L", ");
@@ -1198,10 +1204,6 @@ LRESULT CALLBACK TwigMainWindowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM 
 					DestroyWindow(hWndSuperMaster);
 				}
 				break;
-			case WM_SIZE:
-			case WM_SIZING:
-				win->LayoutWindows();
-				break;
 			case WMA_DRAGSTART:
 				if (win->lockWindows) break;
 				if (win->numChildren > 1) {
@@ -1284,7 +1286,7 @@ LRESULT CALLBACK TwigMainWindowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM 
 						return 0;
 					}
 					else if (cmd == ID_VIEW_MINIMIZEONESC) {
-						win->SetMinimizeOnEsc(!win->minimizeonesc);
+						win->SetMinimizeOnEsc(!win->minimizeOnEsc);
 						return 0;
 					}
 					else if (cmd == ID_TOOLS_OPTIONS) {
@@ -1495,6 +1497,25 @@ LRESULT CALLBACK TwigMainWindowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM 
 				ReleaseCapture();
 			case WM_ACTIVATE:
 				dragging = 0;
+				if (LOWORD(wParam) != WA_INACTIVE) {
+					win->SetMinimizeHotkey(win->minimizeOnEsc);
+				} else {
+					win->SetMinimizeHotkey(0);
+				}
+				break;
+			case WM_SIZE:
+				if (wParam == SIZE_MINIMIZED) {
+					win->wasMinimized = 1;
+					win->SetMinimizeHotkey(0);
+					break;
+				} else if (wParam == SIZE_RESTORED || wParam == SIZE_MAXIMIZED) {
+					if (win->wasMinimized) {
+						win->wasMinimized = 0;
+						win->SetMinimizeHotkey(win->minimizeOnEsc);
+					}
+				}
+			case WM_SIZING:
+				win->LayoutWindows();
 				break;
 			case WM_HOTKEY:
 				if (wParam == 1) {
