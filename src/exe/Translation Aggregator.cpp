@@ -383,6 +383,7 @@ struct MasterWindow {
 
 	void SetMinimizeOnEsc(int val) {
 		minimizeOnEsc = val;
+		if (val && hWnd != GetForegroundWindow()) val = 0;
 		SetMinimizeHotkey(val);
 		SetChecks();
 	}

@@ -9,6 +9,7 @@ Backup
 *.sdf
 *.user
 *.bsc
+*.lnk
 /bin/dictionaries/*.bin
 /bin/dictionaries/UserDict.txt
 /bin/*.exe
