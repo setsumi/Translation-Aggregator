@@ -1,8 +1,10 @@
-Microsoft Visual Studio Solution File, Format Version 10.00
-# Visual Studio 2008
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Translation Aggregator", "exe\Translation Aggregator.vcproj", "{0A8742E2-930E-400E-82D0-ABD74B7DE3AD}"
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.8.34525.116
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Translation Aggregator", "exe\Translation Aggregator.vcxproj", "{0A8742E2-930E-400E-82D0-ABD74B7DE3AD}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Translation Aggregator dll", "dll\Translation Aggregator dll.vcproj", "{0138CFA2-3243-427F-9766-188912797562}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Translation Aggregator dll", "dll\Translation Aggregator dll.vcxproj", "{0138CFA2-3243-427F-9766-188912797562}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -24,5 +26,6 @@ Global
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		AMDCaProjectFile = D:\My Programs\Translation Aggregator\CodeAnalyst\Translation Aggregator.caw
+		SolutionGuid = {50DF1149-C3B7-46CB-B229-6A0D605D3D18}
 	EndGlobalSection
 EndGlobal

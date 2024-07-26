@@ -1,8 +1,17 @@
-# Intermediate Build files
-/temp
-/bin/Translation Aggregator.ini
-/**/*.ncb
-/**/*.suo
-/**/*.aps
-/**/*.sdf
-/**/*.Setsumi.user
+# folders
+temp
+.vs
+Backup
+# files
+*.ncb
+*.suo
+*.aps
+*.sdf
+*.user
+*.bsc
+/bin/dictionaries/*.bin
+/bin/dictionaries/UserDict.txt
+/bin/*.exe
+/bin/*.dll
+/bin/*.ini
+UpgradeLog.htm

@@ -349,6 +349,7 @@ struct MasterWindow {
 	TranslationWindow *children[20];
 	int rowPlacements[20];
 	RECT windowPlacements[20];
+	unsigned char minimizeonesc;
 
 	void Destroy() {
 		for (int i=0; i<numMasterWindows; i++) {
@@ -376,6 +377,17 @@ struct MasterWindow {
 		HWND top = HWND_NOTOPMOST;
 		if (topmost) top = HWND_TOPMOST;
 		SetWindowPos(hWnd, top, 0, 0, 0, 0, SWP_NOACTIVATE | SWP_NOMOVE | SWP_NOSIZE);
+		SetChecks();
+	}
+
+	void SetMinimizeOnEsc(int val) {
+		minimizeonesc = val;
+		if (minimizeonesc) {
+			RegisterHotKey(hWnd, 1, 0, VK_ESCAPE);
+		}
+		else {
+			UnregisterHotKey(hWnd, 1);
+		}
 		SetChecks();
 	}
 
@@ -432,6 +444,7 @@ struct MasterWindow {
 			}
 			SetWindowLongPtr(hWnd, GWLP_USERDATA, (ULONG_PTR)this);
 			SetTopmost(topmost);
+			SetMinimizeOnEsc(minimizeonesc);
 			HMENU hMenu = GetMenu(hWnd);
 			if (hMenu) {
 				if (!showWindowFrame) {
@@ -637,7 +650,7 @@ struct MasterWindow {
 	}
 
 
-	static MasterWindow *CreateMasterWindow(TranslationWindow *w, int numCols=2, int colPlacement=RANGE_MAX/2, int topmost = 0, int frame = 1, int toolbars = 1, int alpha = 255, int lockWindows = 0, int borderless = 0) {
+	static MasterWindow *CreateMasterWindow(TranslationWindow *w, int numCols=2, int colPlacement=RANGE_MAX/2, int topmost = 0, int frame = 1, int toolbars = 1, int alpha = 255, int lockWindows = 0, int borderless = 0, int minimizeonesc = 0) {
 		if (colPlacement < 0 || colPlacement > RANGE_MAX) colPlacement = RANGE_MAX/2;
 		MasterWindow *master = (MasterWindow*) calloc(1, sizeof(MasterWindow));
 
@@ -646,6 +659,7 @@ struct MasterWindow {
 		master->numCols = 1 + (1!=numCols);
 		master->colPlacement = colPlacement;
 		master->topmost = topmost;
+		master->minimizeonesc = minimizeonesc;
 		master->showWindowFrame = frame;
 		master->borderlessWindow = borderless;
 		master->showToolbars = toolbars;
@@ -786,6 +800,10 @@ struct MasterWindow {
 				check = MF_UNCHECKED;
 				if (topmost) check = MF_CHECKED;
 				CheckMenuItem(hMenu, ID_TOPMOST, MF_BYCOMMAND | check);
+
+				check = MF_UNCHECKED;
+				if (minimizeonesc) check = MF_CHECKED;
+				CheckMenuItem(hMenu, ID_VIEW_MINIMIZEONESC, MF_BYCOMMAND | check);
 			}
 			if (hMenu = GetSubMenu(hMainMenu, 3)) {
 				check = MF_UNCHECKED;
@@ -840,11 +858,12 @@ struct MasterWindow {
 				}
 				RECT r;
 				GetWindowRect(win->hWnd, &r);
-				wsprintf(end, L"; %i, %i, %i, %i, %i, %i, %i, %i, %i, %i, %i, %i, %i, %i, %i, %i, %i, %i, %i, %i; ", win->numCols, win->topmost, win->showWindowFrame, win->showToolbars, win->alpha, win->colPlacement, r.left, r.top, r.right-r.left, r.bottom-r.top, win->lockWindows, win->borderlessWindow,
+				wsprintf(end, L"; %i, %i, %i, %i, %i, %i, %i, %i, %i, %i, %i, %i, %i, %i, %i, %i, %i, %i, %i, %i, %i; ", win->numCols, win->topmost, win->showWindowFrame, win->showToolbars, win->alpha, win->colPlacement, r.left, r.top, r.right-r.left, r.bottom-r.top, win->lockWindows, win->borderlessWindow,
 					pjparser?pjparser->colors[0]:0, pjparser?pjparser->colors[1]:0,
 					pjparser?pjparser->colors[2]:0, pjparser?pjparser->colors[3]:0,
 					pmecab?pmecab->colors[0]:0, pmecab?pmecab->colors[1]:0,
-					pmecab?pmecab->colors[2]:0, pmecab?pmecab->colors[3]:0);
+					pmecab?pmecab->colors[2]:0, pmecab?pmecab->colors[3]:0,
+					win->minimizeonesc);
 				for (int j=0; j<win->numRows; j++) {
 					if (j)
 						wcscat(end, L", ");
@@ -915,7 +934,7 @@ struct MasterWindow {
 				}
 				if (win) {
 					if (!master)
-						master = MasterWindow::CreateMasterWindow(win, vals[0], vals[5], vals[1], vals[2], vals[3], vals[4], vals[10], vals[11]);
+						master = MasterWindow::CreateMasterWindow(win, vals[0], vals[5], vals[1], vals[2], vals[3], vals[4], vals[10], vals[11], vals[20]);
 					else
 						master->AddChild(win);
 				}
@@ -1264,6 +1283,10 @@ LRESULT CALLBACK TwigMainWindowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM 
 						win->SetTopmost(!win->topmost);
 						return 0;
 					}
+					else if (cmd == ID_VIEW_MINIMIZEONESC) {
+						win->SetMinimizeOnEsc(!win->minimizeonesc);
+						return 0;
+					}
 					else if (cmd == ID_TOOLS_OPTIONS) {
 						ConfigDialog(hWnd);
 						return 0;
@@ -1472,6 +1495,11 @@ LRESULT CALLBACK TwigMainWindowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM 
 				ReleaseCapture();
 			case WM_ACTIVATE:
 				dragging = 0;
+				break;
+			case WM_HOTKEY:
+				if (wParam == 1) {
+					ShowWindow(hWnd, SW_MINIMIZE);
+				}
 				break;
 			default:
 				break;
